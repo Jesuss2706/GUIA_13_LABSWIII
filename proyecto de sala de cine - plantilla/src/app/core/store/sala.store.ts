@@ -10,6 +10,7 @@ import { estadoInicial, salaReducer } from './sala.reducer';
  * derivados con computed. El estado solo cambia a través de dispatch().
  */
 @Injectable({ providedIn: 'root' })
+
 export class SalaStore {
   private readonly efectos = inject(SalaEfectos);
   private readonly _estado = signal(estadoInicial);
@@ -49,7 +50,20 @@ export class SalaStore {
 
   /** Mapa de la sala agrupado por filas, con el estado de cada silla. */
   readonly filas = computed<FilaVista[]>(() => {
- xxxx});
+    const ocupadas = this.idsOcupadas();
+    const seleccionadas = this.idsSeleccionadas();
+
+    const estadoDe = (id: string): EstadoSilla =>
+      ocupadas.has(id) ? 'ocupada' : seleccionadas.has(id) ? 'seleccionada' : 'libre';
+
+    const filas = new Map<string, SillaVista[]>();
+    for (const silla of this._estado().sillas) {
+      const fila = filas.get(silla.fila) ?? [];
+      fila.push({ silla, estado: estadoDe(silla.id) });
+      filas.set(silla.fila, fila);
+    }
+    return [...filas].map(([letra, sillas]) => ({ letra, sillas }));
+  });
 
   readonly estadoCompra = computed(() => this._estado().estadoCompra);
   readonly procesando = computed(() => this.estadoCompra() === 'procesando');

@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { EstadoSilla, FilaVista, Silla } from '../../../../core/models';
-import { PASILLO_DESPUES_DE } from '../../../../core/data/sala.data';
+import { EstadoSilla, Silla } from '../../../../core/models';
 
 const COLOR_POR_ESTADO: Record<EstadoSilla, string> = {
   libre: 'var(--silla-libre)',
@@ -24,19 +23,21 @@ const TEXTO_ESTADO: Record<EstadoSilla, string> = {
   styleUrl: './silla.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
 export class SillaComponent {
-  readonly fila = input.required<FilaVista>();
-  readonly sillaAlternada = output<string>();
+  readonly silla = input.required<Silla>();
+  readonly estado = input.required<EstadoSilla>();
 
-  protected readonly pasilloDespuesDe = PASILLO_DESPUES_DE;
+  readonly alternar = output<string>();
 
   /** Color derivado automáticamente del estado. */
-  readonly xxxx = computed(() =>xxxx);
+  readonly color = computed(() => COLOR_POR_ESTADO[this.estado()]);
 
-  readonly xxxx = computed(() => xxxx);
+  readonly etiqueta = computed(() => {
+    const s = this.silla();
+    return `Silla ${s.id}, ${s.tipo}, ${TEXTO_ESTADO[this.estado()]}`;
+  });
 
   protected notificar(): void {
-    xxxx;
+    this.alternar.emit(this.silla().id);
   }
 }
